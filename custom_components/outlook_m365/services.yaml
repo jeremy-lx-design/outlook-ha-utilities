@@ -1,0 +1,399 @@
+send_email:
+  name: Send email
+  description: Send a new email from the connected mailbox.
+  fields:
+    config_entry_id:
+      name: Account
+      description: Config entry id of the mailbox to use (optional when only one account is configured).
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    to:
+      name: To
+      description: One or more recipient email addresses.
+      required: true
+      example: '["person@example.com"]'
+      selector:
+        object:
+    cc:
+      name: Cc
+      description: Carbon-copy recipients.
+      required: false
+      selector:
+        object:
+    bcc:
+      name: Bcc
+      description: Blind carbon-copy recipients.
+      required: false
+      selector:
+        object:
+    subject:
+      name: Subject
+      description: The email subject line.
+      required: true
+      example: Garage door left open
+      selector:
+        text:
+    message:
+      name: Message
+      description: The email body.
+      required: true
+      selector:
+        text:
+          multiline: true
+    body_type:
+      name: Body type
+      description: Whether the body is plain text or HTML.
+      required: false
+      default: Text
+      selector:
+        select:
+          options:
+            - Text
+            - HTML
+    save_to_sent_items:
+      name: Save to sent items
+      description: Keep a copy in the Sent Items folder.
+      required: false
+      default: true
+      selector:
+        boolean:
+
+reply_email:
+  name: Reply to email
+  description: Reply (or reply-all) to a message by id.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      description: The id of the message to reply to (e.g. from the new-email event).
+      required: true
+      selector:
+        text:
+    comment:
+      name: Comment
+      description: Text to prepend to the reply.
+      required: false
+      selector:
+        text:
+          multiline: true
+    reply_all:
+      name: Reply all
+      description: Reply to everyone on the message.
+      required: false
+      default: false
+      selector:
+        boolean:
+
+forward_email:
+  name: Forward email
+  description: Forward a message to one or more recipients.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+    to:
+      name: To
+      description: Recipient email addresses.
+      required: true
+      selector:
+        object:
+    comment:
+      name: Comment
+      required: false
+      selector:
+        text:
+          multiline: true
+
+move_email:
+  name: Move email
+  description: Move a message to another folder.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+    destination:
+      name: Destination
+      description: Folder id or a well-known name (inbox, archive, deleteditems, junkemail, drafts).
+      required: true
+      example: archive
+      selector:
+        text:
+
+mark_email:
+  name: Mark email read/unread
+  description: Mark a message as read or unread.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+    read:
+      name: Read
+      description: True to mark as read, false for unread.
+      required: false
+      default: true
+      selector:
+        boolean:
+
+flag_email:
+  name: Flag email
+  description: Set the follow-up flag on a message.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+    flag_status:
+      name: Flag status
+      required: false
+      default: flagged
+      selector:
+        select:
+          options:
+            - notFlagged
+            - flagged
+            - complete
+
+categorize_email:
+  name: Categorize email
+  description: Replace the categories assigned to a message.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+    categories:
+      name: Categories
+      description: List of category names to assign.
+      required: true
+      example: '["Receipts", "Automated"]'
+      selector:
+        object:
+
+delete_email:
+  name: Delete email
+  description: Delete a message (moves it to Deleted Items).
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    message_id:
+      name: Message id
+      required: true
+      selector:
+        text:
+
+create_folder:
+  name: Create folder
+  description: Create a new mail folder.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    name:
+      name: Name
+      required: true
+      selector:
+        text:
+    parent:
+      name: Parent folder
+      description: Parent folder id or well-known name (default msgfolderroot).
+      required: false
+      default: msgfolderroot
+      selector:
+        text:
+
+create_rule:
+  name: Create inbox rule
+  description: Create a server-side inbox (message) rule.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    name:
+      name: Name
+      required: true
+      selector:
+        text:
+    sequence:
+      name: Sequence
+      description: Order in which the rule is evaluated (lower runs first).
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 100
+          mode: box
+    is_enabled:
+      name: Enabled
+      required: false
+      default: true
+      selector:
+        boolean:
+    from_addresses:
+      name: From contains
+      description: Match when the sender contains any of these addresses/names.
+      required: false
+      selector:
+        object:
+    subject_contains:
+      name: Subject contains
+      description: Match when the subject contains any of these strings.
+      required: false
+      selector:
+        object:
+    body_contains:
+      name: Body contains
+      required: false
+      selector:
+        object:
+    importance:
+      name: Importance
+      required: false
+      selector:
+        select:
+          options:
+            - low
+            - normal
+            - high
+    move_to_folder:
+      name: Move to folder
+      description: Folder id or well-known name to move matches into.
+      required: false
+      selector:
+        text:
+    copy_to_folder:
+      name: Copy to folder
+      required: false
+      selector:
+        text:
+    forward_to:
+      name: Forward to
+      required: false
+      selector:
+        object:
+    mark_as_read:
+      name: Mark as read
+      required: false
+      default: false
+      selector:
+        boolean:
+    mark_importance:
+      name: Mark importance
+      required: false
+      selector:
+        select:
+          options:
+            - low
+            - normal
+            - high
+    assign_categories:
+      name: Assign categories
+      required: false
+      selector:
+        object:
+    delete:
+      name: Delete
+      description: Delete matching messages.
+      required: false
+      default: false
+      selector:
+        boolean:
+    stop_processing_rules:
+      name: Stop processing further rules
+      required: false
+      default: false
+      selector:
+        boolean:
+
+delete_rule:
+  name: Delete inbox rule
+  description: Delete an inbox (message) rule by id.
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+    rule_id:
+      name: Rule id
+      required: true
+      selector:
+        text:
+
+list_folders:
+  name: List folders
+  description: Return the mailbox folders (use response_variable to capture ids).
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
+
+list_rules:
+  name: List inbox rules
+  description: Return the configured inbox rules (use response_variable to capture ids).
+  fields:
+    config_entry_id:
+      name: Account
+      required: false
+      selector:
+        config_entry:
+          integration: outlook_m365
