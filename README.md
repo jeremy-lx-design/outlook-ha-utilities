@@ -40,56 +40,117 @@ automations and scripts.
 Copy `custom_components/outlook_m365` into your Home Assistant `config/custom_components`
 directory and restart.
 
-## Azure app registration
+## Setup — step by step
 
-You need a client ID and secret from Azure. This is a one-time setup.
+This is a one-time setup. You'll bounce between **two browser tabs**:
 
-> **Using a personal account (@outlook.com / @hotmail.com / @live.com)?**
-> Your mailbox account and the app registration are *separate things*. A personal
-> Microsoft account has no client ID/secret and, by default, cannot open **App
-> registrations** (you'll hit error `AADSTS50020`). To fix this, sign in once at
-> [azure.microsoft.com/free](https://azure.microsoft.com/free) with that same personal
-> account — this **creates a free Microsoft Entra (Azure AD) tenant** with you as admin at
-> **no cost** (no credit-card charges, no paid Azure services required). You then create
-> the app registration inside that free tenant. In step 3 below, make sure you select the
-> option that **includes personal Microsoft accounts** so your Outlook.com mailbox can
-> sign in and consent.
+- 🟦 **Azure tab** — where you register the app and get a Client ID + Secret.
+- 🟧 **Home Assistant tab** — where you paste those values and log in.
 
-1. Go to the [Azure Portal](https://portal.azure.com/) → **Microsoft Entra ID** →
-   **App registrations** → **New registration**.
-2. **Name**: e.g. `Home Assistant Outlook`.
-3. **Supported account types**: choose *Accounts in any organizational directory and
-   personal Microsoft accounts* (this matches the `common` endpoint the integration uses).
-4. **Redirect URI**: platform **Web**, value:
-   ```
-   https://my.home-assistant.io/redirect/oauth
-   ```
-5. Click **Register** and copy the **Application (client) ID**.
-6. Go to **Certificates & secrets → New client secret**, create one, and copy its
-   **Value** (not the Secret ID).
-7. (Optional) Under **API permissions** you can review the delegated Microsoft Graph
-   permissions; they are requested automatically during login:
-   `offline_access`, `User.Read`, `Mail.ReadWrite`, `Mail.Send`,
-   `MailboxSettings.ReadWrite`.
+> 💡 **Keep both tabs open the whole time.** The guide tells you exactly when to switch.
+> Have a notepad handy to paste two values into: a **Client ID** and a **Client Secret**.
 
-## Login / configuration
+### Before you start: do you use a personal account?
 
-> **Does it pop open a Microsoft login page?** Not automatically — during setup you click
-> a **Link account** button, which opens Microsoft's sign-in and consent page in your
-> browser (standard OAuth2 Authorization Code flow). After the first login, a refresh
-> token keeps you signed in; no repeated pop-ups.
+If your mailbox is a **personal** account (`@outlook.com`, `@hotmail.com`, `@live.com`),
+do this **one extra thing first**; work/school M365 users can skip to Part A.
 
-1. In Home Assistant: **Settings → Devices & Services → Add Integration → Outlook M365**.
-2. The first time, HA asks for **Application Credentials** — paste the **client ID** and
-   **client secret** from Azure.
-3. Click **Link account**. The Microsoft login page opens in your browser.
-4. Sign in and **consent** to the requested permissions.
-5. Microsoft redirects through `my.home-assistant.io` back to your HA instance, which
-   exchanges the code for tokens. Done.
+1. Open a **new tab** and go to **<https://azure.microsoft.com/free>**.
+2. Sign in with your personal Microsoft account and complete the free sign-up.
+   - ✅ This creates a **free** Microsoft Entra (Azure AD) tenant with you as admin.
+   - ✅ No credit-card charges and no paid Azure services are required.
+   - ℹ️ Why: a bare personal account can't open **App registrations** (you'd hit error
+     `AADSTS50020`). This step gives you a tenant where you can.
+3. ⏎ **Come back here** and continue with Part A.
 
-> **External URL required.** The `my.home-assistant.io` redirect bounces the login back to
-> your HA instance using your **External URL** (Settings → System → Network). Azure
-> requires HTTPS redirect URIs (except `localhost`), which is why the relay is used.
+---
+
+### Part A — Create the app registration (🟦 Azure tab)
+
+**A1.** Open a **new tab** and go to **<https://portal.azure.com/>**. Sign in with the
+Microsoft account you'll manage this from.
+
+**A2.** In the top search bar, type **App registrations** and open it.
+→ *Direct link:* <https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade>
+
+**A3.** Click **+ New registration** (top-left).
+
+**A4.** Fill in the form:
+- **Name:** `Home Assistant Outlook` (anything you like).
+- **Supported account types:** select
+  **“Accounts in any organizational directory (Any Microsoft Entra ID tenant –
+  Multitenant) and personal Microsoft accounts.”**
+  ⚠️ This exact option is required — it's what lets your mailbox sign in.
+- **Redirect URI:** change the dropdown to **Web**, and paste exactly:
+  ```
+  https://my.home-assistant.io/redirect/oauth
+  ```
+
+**A5.** Click **Register**.
+
+**A6.** You're now on the app's **Overview** page. Find **Application (client) ID**, click
+the **copy** icon, and **paste it into your notepad** as *Client ID*. ✅ (value #1 of 2)
+
+**A7.** In the left menu click **Certificates & secrets** → tab **Client secrets** →
+**+ New client secret**.
+- **Description:** `home-assistant`
+- **Expires:** pick the longest option (e.g. 24 months).
+- Click **Add**.
+
+**A8.** ⚠️ **Immediately copy the secret’s `Value` column** (NOT the “Secret ID”) and
+**paste it into your notepad** as *Client Secret*. ✅ (value #2 of 2)
+> The `Value` is only shown **once**. If you navigate away before copying it, just delete
+> the secret and create a new one.
+
+You now have both values. **Leave the Azure tab open** (in case you need to redo a secret)
+and switch to Home Assistant.
+
+---
+
+### Part B — Add the integration in Home Assistant (🟧 Home Assistant tab)
+
+**B0.** *(One-time prerequisite)* Your HA must be reachable over HTTPS via its **External
+URL**, because Microsoft sends the login result back through `my.home-assistant.io`.
+Check **Settings → System → Network → Home Assistant URL** has a working external
+`https://…` address. If using Nabu Casa Cloud, this is already set.
+
+**B1.** Go to **Settings → Devices & Services**.
+→ *Or open:* <https://my.home-assistant.io/redirect/integrations/>
+
+**B2.** Click **+ Add Integration** (bottom-right), search **Outlook M365**, and select it.
+
+**B3.** The first time only, HA shows an **Add Application Credentials** dialog. Now use
+your notepad:
+- **Client ID:** paste *value #1*.
+- **Client Secret:** paste *value #2*.
+- Click **Create** / **Submit**.
+
+**B4.** HA shows **“… wants to link your account.”** Click **Link account / Open**.
+→ A Microsoft **sign-in page opens in a new tab**. *(No, it doesn't pop open by itself —
+you trigger it with this button.)*
+
+**B5.** 🟦 **In that Microsoft tab:** sign in with the **mailbox** you want to automate,
+then on the **permissions** screen click **Accept** to consent to:
+`offline_access`, `User.Read`, `Mail.ReadWrite`, `Mail.Send`, `MailboxSettings.ReadWrite`.
+
+**B6.** Microsoft redirects back through `my.home-assistant.io` to your HA instance. ⏎
+**Return to the Home Assistant tab** — you should see **“Success!”** and can assign the
+integration to an Area.
+
+**✅ Done.** A refresh token now keeps you signed in indefinitely — you won't see the login
+page again unless you remove the integration or revoke access.
+
+---
+
+### Setup troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `AADSTS50020` when opening App registrations | You're on a bare personal account — do the free Azure sign-up in *“Before you start”*. |
+| `redirect_uri` mismatch after login | The Azure **Redirect URI** must be exactly `https://my.home-assistant.io/redirect/oauth` under a **Web** platform (Part A, step A4). |
+| “No URL available” / can't reach HA after login | Set a working **External URL** (step B0); Azure needs an HTTPS redirect. |
+| Lost the client secret value | Azure tab → Certificates & secrets → delete it and create a new one (A7–A8), then re-add in HA. |
+| Asks you to log in again later | Re-link the account; the flow requests `offline_access` + `prompt=consent` so a refresh token is issued. |
 
 ## Triggering automations on incoming email
 

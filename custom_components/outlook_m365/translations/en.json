@@ -38,6 +38,6 @@
     }
   },
   "application_credentials": {
-    "description": "Follow the [Azure app registration instructions]({more_info_url}). You must add the redirect URL `{redirect_url}` as a **Web** platform redirect URI in your Azure app registration, then create a client secret."
+    "description": "Paste the **Client ID** and **Client Secret** from your Azure app registration.\n\nDon't have them yet? Open the [step-by-step setup guide]({more_info_url}) in a new tab. In short: register an app at the Azure portal, add the redirect URI `{redirect_url}` as a **Web** platform, then create a client secret. Come back here and paste both values."
   }
 }
