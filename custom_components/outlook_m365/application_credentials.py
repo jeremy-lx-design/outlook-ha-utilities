@@ -26,5 +26,5 @@ async def async_get_description_placeholders(hass: HomeAssistant) -> dict[str, s
     return {
         "oauth_consent_url": "https://portal.azure.com/",
         "redirect_url": "https://my.home-assistant.io/redirect/oauth",
-        "more_info_url": "https://github.com/jeremy/outlook-ha-utilities",
+        "more_info_url": "https://github.com/jeremy-lx-design/outlook-ha-utilities#setup--step-by-step",
     }

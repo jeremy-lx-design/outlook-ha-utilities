@@ -1,13 +1,13 @@
 {
   "domain": "outlook_m365",
   "name": "Outlook M365",
-  "codeowners": ["@jeremy"],
+  "codeowners": ["@jeremy-lx-design"],
   "config_flow": true,
   "dependencies": ["application_credentials"],
-  "documentation": "https://github.com/jeremy/outlook-ha-utilities",
+  "documentation": "https://github.com/jeremy-lx-design/outlook-ha-utilities",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/jeremy/outlook-ha-utilities/issues",
+  "issue_tracker": "https://github.com/jeremy-lx-design/outlook-ha-utilities/issues",
   "requirements": [],
   "version": "0.1.0"
 }
